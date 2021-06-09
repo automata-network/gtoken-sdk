@@ -1,17 +1,18 @@
 {
-  "name": "@uniswap/sdk",
+  "name": "@gtoken/sdk",
   "license": "MIT",
-  "version": "3.0.3",
-  "description": "🛠 An SDK for building applications on top of Uniswap.",
+  "version": "1.0.1",
+  "description": "",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
     "dist"
   ],
-  "repository": "https://github.com/Uniswap/uniswap-sdk.git",
+  "repository": "https://github.com/automata-network/gtoken-sdk.git",
   "keywords": [
-    "uniswap",
-    "ethereum"
+    "gtoken",
+    "ethereum",
+    "bsc"
   ],
   "module": "dist/sdk.esm.js",
   "scripts": {
