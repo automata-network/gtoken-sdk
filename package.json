@@ -1,8 +1,8 @@
 {
   "name": "@gtoken/sdk",
   "license": "MIT",
-  "version": "1.0.1",
-  "description": "",
+  "version": "0.0.1",
+  "description": "An SDK used for building GToken",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
@@ -17,6 +17,7 @@
   "module": "dist/sdk.esm.js",
   "scripts": {
     "lint": "tsdx lint src test",
+    "lint:fix": "tsdx lint src test --fix",
     "build": "tsdx build",
     "start": "tsdx watch",
     "test": "tsdx test",
