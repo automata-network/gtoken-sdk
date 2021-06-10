@@ -7,15 +7,17 @@ import { getCreate2Address } from '@ethersproject/address'
 
 import {
   BigintIsh,
-  FACTORY_ADDRESS,
-  INIT_CODE_HASH,
+  UNI_FACTORY_ADDRESS,
+  UNI_INIT_CODE_HASH,
   MINIMUM_LIQUIDITY,
   ZERO,
   ONE,
   FIVE,
   _997,
   _1000,
-  ChainId
+  ChainId,
+  CAKE_FACTORY_ADDRESS,
+  CAKE_INIT_CODE_HASH
 } from '../constants'
 import { sqrt, parseBigintIsh } from '../utils'
 import { InsufficientReservesError, InsufficientInputAmountError } from '../errors'
@@ -28,6 +30,16 @@ export class Pair {
   private readonly tokenAmounts: [TokenAmount, TokenAmount]
 
   public static getAddress(tokenA: Token, tokenB: Token): string {
+    var factory_address = '';
+    var init_code_hash = '';
+    if (tokenA.chainId == 56 || tokenA.chainId == 97) {
+      factory_address = CAKE_FACTORY_ADDRESS;
+      init_code_hash = CAKE_INIT_CODE_HASH;
+    } else {
+      factory_address = UNI_FACTORY_ADDRESS;
+      init_code_hash = UNI_INIT_CODE_HASH;
+    }
+
     const tokens = tokenA.sortsBefore(tokenB) ? [tokenA, tokenB] : [tokenB, tokenA] // does safety checks
 
     if (PAIR_ADDRESS_CACHE?.[tokens[0].address]?.[tokens[1].address] === undefined) {
@@ -36,9 +48,9 @@ export class Pair {
         [tokens[0].address]: {
           ...PAIR_ADDRESS_CACHE?.[tokens[0].address],
           [tokens[1].address]: getCreate2Address(
-            FACTORY_ADDRESS,
+            factory_address,
             keccak256(['bytes'], [pack(['address', 'address'], [tokens[0].address, tokens[1].address])]),
-            INIT_CODE_HASH
+            init_code_hash
           )
         }
       }
