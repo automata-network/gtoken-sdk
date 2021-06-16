@@ -40,8 +40,10 @@ var _SOLIDITY_TYPE_MAXIMA;
 
 var UNI_FACTORY_ADDRESS = '0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f';
 var UNI_INIT_CODE_HASH = '0x96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f';
-var CAKE_FACTORY_ADDRESS = '0x6725F303b657a9451d8BA641348b6761A6CC7a17';
-var CAKE_INIT_CODE_HASH = '0xd0d4c4cd0848c93cb4fd1f498d7013ee6bfb25783ea21593d5834f5d250ece66';
+var CAKE_FACTORY_ADDRESS_TEST = '0x6725F303b657a9451d8BA641348b6761A6CC7a17';
+var CAKE_INIT_CODE_HASH_TEST = '0xd0d4c4cd0848c93cb4fd1f498d7013ee6bfb25783ea21593d5834f5d250ece66';
+var CAKE_FACTORY_ADDRESS_MAIN = '0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73';
+var CAKE_INIT_CODE_HASH_MAIN = '0x00fb7f630766e6a796048ea87d01acd3068e8ff67d078148a3fa3f4a84f69bd5';
 var MINIMUM_LIQUIDITY = /*#__PURE__*/JSBI.BigInt(1000); // exports for internal consumption
 
 var ZERO = /*#__PURE__*/JSBI.BigInt(0);
@@ -773,9 +775,12 @@ var Pair = /*#__PURE__*/function () {
     var factory_address = '';
     var init_code_hash = '';
 
-    if (tokenA.chainId == 56 || tokenA.chainId == 97) {
-      factory_address = CAKE_FACTORY_ADDRESS;
-      init_code_hash = CAKE_INIT_CODE_HASH;
+    if (tokenA.chainId == 56) {
+      factory_address = CAKE_FACTORY_ADDRESS_MAIN;
+      init_code_hash = CAKE_INIT_CODE_HASH_MAIN;
+    } else if (tokenA.chainId == 97) {
+      factory_address = CAKE_FACTORY_ADDRESS_TEST;
+      init_code_hash = CAKE_INIT_CODE_HASH_TEST;
     } else {
       factory_address = UNI_FACTORY_ADDRESS;
       init_code_hash = UNI_INIT_CODE_HASH;
@@ -1583,8 +1588,10 @@ var Fetcher = /*#__PURE__*/function () {
 }();
 
 exports.JSBI = JSBI;
-exports.CAKE_FACTORY_ADDRESS = CAKE_FACTORY_ADDRESS;
-exports.CAKE_INIT_CODE_HASH = CAKE_INIT_CODE_HASH;
+exports.CAKE_FACTORY_ADDRESS_MAIN = CAKE_FACTORY_ADDRESS_MAIN;
+exports.CAKE_FACTORY_ADDRESS_TEST = CAKE_FACTORY_ADDRESS_TEST;
+exports.CAKE_INIT_CODE_HASH_MAIN = CAKE_INIT_CODE_HASH_MAIN;
+exports.CAKE_INIT_CODE_HASH_TEST = CAKE_INIT_CODE_HASH_TEST;
 exports.Currency = Currency;
 exports.CurrencyAmount = CurrencyAmount;
 exports.ETHER = ETHER;
