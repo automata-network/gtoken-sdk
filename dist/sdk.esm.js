@@ -23,6 +23,7 @@ var ChainId;
   ChainId[ChainId["KOVAN"] = 42] = "KOVAN";
   ChainId[ChainId["BSCMAIN"] = 56] = "BSCMAIN";
   ChainId[ChainId["BSCTEST"] = 97] = "BSCTEST";
+  ChainId[ChainId["POLYGON"] = 137] = "POLYGON";
 })(ChainId || (ChainId = {}));
 
 var TradeType;
@@ -46,6 +47,8 @@ var CAKE_FACTORY_ADDRESS_TEST = '0x6725F303b657a9451d8BA641348b6761A6CC7a17';
 var CAKE_INIT_CODE_HASH_TEST = '0xd0d4c4cd0848c93cb4fd1f498d7013ee6bfb25783ea21593d5834f5d250ece66';
 var CAKE_FACTORY_ADDRESS_MAIN = '0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73';
 var CAKE_INIT_CODE_HASH_MAIN = '0x00fb7f630766e6a796048ea87d01acd3068e8ff67d078148a3fa3f4a84f69bd5';
+var QUICK_FACTORY_ADDRESS = '0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32';
+var QUICK_INIT_CODE_HASH = '0x96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f';
 var MINIMUM_LIQUIDITY = /*#__PURE__*/JSBI.BigInt(1000); // exports for internal consumption
 
 var ZERO = /*#__PURE__*/JSBI.BigInt(0);
@@ -777,12 +780,15 @@ var Pair = /*#__PURE__*/function () {
     var factory_address = '';
     var init_code_hash = '';
 
-    if (tokenA.chainId == 56) {
+    if (tokenA.chainId == ChainId.BSCMAIN) {
       factory_address = CAKE_FACTORY_ADDRESS_MAIN;
       init_code_hash = CAKE_INIT_CODE_HASH_MAIN;
-    } else if (tokenA.chainId == 97) {
+    } else if (tokenA.chainId == ChainId.BSCTEST) {
       factory_address = CAKE_FACTORY_ADDRESS_TEST;
       init_code_hash = CAKE_INIT_CODE_HASH_TEST;
+    } else if (tokenA.chainId == ChainId.POLYGON) {
+      factory_address = QUICK_FACTORY_ADDRESS;
+      init_code_hash = QUICK_INIT_CODE_HASH;
     } else {
       factory_address = UNI_FACTORY_ADDRESS;
       init_code_hash = UNI_INIT_CODE_HASH;
@@ -977,9 +983,9 @@ var Route = /*#__PURE__*/function () {
     !pairs.every(function (pair) {
       return pair.chainId === pairs[0].chainId;
     }) ? process.env.NODE_ENV !== "production" ? invariant(false, 'CHAIN_IDS') : invariant(false) : void 0;
-    !(input instanceof Token && pairs[0].involvesToken(input) || input === ETHER && pairs[0].involvesToken(WETH[pairs[0].chainId])) ? process.env.NODE_ENV !== "production" ? invariant(false, 'INPUT') : invariant(false) : void 0;
-    !(typeof output === 'undefined' || output instanceof Token && pairs[pairs.length - 1].involvesToken(output) || output === ETHER && pairs[pairs.length - 1].involvesToken(WETH[pairs[0].chainId])) ? process.env.NODE_ENV !== "production" ? invariant(false, 'OUTPUT') : invariant(false) : void 0;
-    var path = [input instanceof Token ? input : WETH[pairs[0].chainId]];
+    !(input instanceof Token && pairs[0].involvesToken(input)) ? process.env.NODE_ENV !== "production" ? invariant(false, 'INPUT') : invariant(false) : void 0;
+    !(typeof output === 'undefined' || output instanceof Token && pairs[pairs.length - 1].involvesToken(output)) ? process.env.NODE_ENV !== "production" ? invariant(false, 'OUTPUT') : invariant(false) : void 0;
+    var path = [input];
 
     for (var _iterator = _createForOfIteratorHelperLoose(pairs.entries()), _step; !(_step = _iterator()).done;) {
       var _step$value = _step.value,
@@ -1105,15 +1111,13 @@ function tradeComparator(a, b) {
  * the input currency amount.
  */
 
-function wrappedAmount(currencyAmount, chainId) {
+function wrappedAmount(currencyAmount) {
   if (currencyAmount instanceof TokenAmount) return currencyAmount;
-  if (currencyAmount.currency === ETHER) return new TokenAmount(WETH[chainId], currencyAmount.raw);
    process.env.NODE_ENV !== "production" ? invariant(false, 'CURRENCY') : invariant(false) ;
 }
 
-function wrappedCurrency(currency, chainId) {
+function wrappedCurrency(currency) {
   if (currency instanceof Token) return currency;
-  if (currency === ETHER) return WETH[chainId];
    process.env.NODE_ENV !== "production" ? invariant(false, 'CURRENCY') : invariant(false) ;
 }
 /**
@@ -1129,7 +1133,7 @@ var Trade = /*#__PURE__*/function () {
 
     if (tradeType === TradeType.EXACT_INPUT) {
       !currencyEquals(amount.currency, route.input) ? process.env.NODE_ENV !== "production" ? invariant(false, 'INPUT') : invariant(false) : void 0;
-      amounts[0] = wrappedAmount(amount, route.chainId);
+      amounts[0] = wrappedAmount(amount);
 
       for (var i = 0; i < route.path.length - 1; i++) {
         var pair = route.pairs[i];
@@ -1143,7 +1147,7 @@ var Trade = /*#__PURE__*/function () {
       }
     } else {
       !currencyEquals(amount.currency, route.output) ? process.env.NODE_ENV !== "production" ? invariant(false, 'OUTPUT') : invariant(false) : void 0;
-      amounts[amounts.length - 1] = wrappedAmount(amount, route.chainId);
+      amounts[amounts.length - 1] = wrappedAmount(amount);
 
       for (var _i = route.path.length - 1; _i > 0; _i--) {
         var _pair = route.pairs[_i - 1];
@@ -1260,8 +1264,8 @@ var Trade = /*#__PURE__*/function () {
     !(originalAmountIn === currencyAmountIn || currentPairs.length > 0) ? process.env.NODE_ENV !== "production" ? invariant(false, 'INVALID_RECURSION') : invariant(false) : void 0;
     var chainId = currencyAmountIn instanceof TokenAmount ? currencyAmountIn.token.chainId : currencyOut instanceof Token ? currencyOut.chainId : undefined;
     !(chainId !== undefined) ? process.env.NODE_ENV !== "production" ? invariant(false, 'CHAIN_ID') : invariant(false) : void 0;
-    var amountIn = wrappedAmount(currencyAmountIn, chainId);
-    var tokenOut = wrappedCurrency(currencyOut, chainId);
+    var amountIn = wrappedAmount(currencyAmountIn);
+    var tokenOut = wrappedCurrency(currencyOut);
 
     for (var i = 0; i < pairs.length; i++) {
       var pair = pairs[i]; // pair irrelevant
@@ -1342,8 +1346,8 @@ var Trade = /*#__PURE__*/function () {
     !(originalAmountOut === currencyAmountOut || currentPairs.length > 0) ? process.env.NODE_ENV !== "production" ? invariant(false, 'INVALID_RECURSION') : invariant(false) : void 0;
     var chainId = currencyAmountOut instanceof TokenAmount ? currencyAmountOut.token.chainId : currencyIn instanceof Token ? currencyIn.chainId : undefined;
     !(chainId !== undefined) ? process.env.NODE_ENV !== "production" ? invariant(false, 'CHAIN_ID') : invariant(false) : void 0;
-    var amountOut = wrappedAmount(currencyAmountOut, chainId);
-    var tokenIn = wrappedCurrency(currencyIn, chainId);
+    var amountOut = wrappedAmount(currencyAmountOut);
+    var tokenIn = wrappedCurrency(currencyIn);
 
     for (var i = 0; i < pairs.length; i++) {
       var pair = pairs[i]; // pair irrelevant

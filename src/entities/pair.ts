@@ -19,7 +19,9 @@ import {
   CAKE_FACTORY_ADDRESS_TEST,
   CAKE_INIT_CODE_HASH_TEST,
   CAKE_FACTORY_ADDRESS_MAIN,
-  CAKE_INIT_CODE_HASH_MAIN
+  CAKE_INIT_CODE_HASH_MAIN,
+  QUICK_FACTORY_ADDRESS,
+  QUICK_INIT_CODE_HASH
 } from '../constants'
 import { sqrt, parseBigintIsh } from '../utils'
 import { InsufficientReservesError, InsufficientInputAmountError } from '../errors'
@@ -34,12 +36,15 @@ export class Pair {
   public static getAddress(tokenA: Token, tokenB: Token): string {
     var factory_address = '';
     var init_code_hash = '';
-    if (tokenA.chainId == 56) {
+    if (tokenA.chainId == ChainId.BSCMAIN) {
       factory_address = CAKE_FACTORY_ADDRESS_MAIN;
       init_code_hash = CAKE_INIT_CODE_HASH_MAIN;
-    } else if (tokenA.chainId == 97) {
+    } else if (tokenA.chainId == ChainId.BSCTEST) {
       factory_address = CAKE_FACTORY_ADDRESS_TEST;
       init_code_hash = CAKE_INIT_CODE_HASH_TEST;
+    } else if (tokenA.chainId == ChainId.POLYGON) {
+      factory_address = QUICK_FACTORY_ADDRESS;
+      init_code_hash = QUICK_INIT_CODE_HASH;
     } else {
       factory_address = UNI_FACTORY_ADDRESS;
       init_code_hash = UNI_INIT_CODE_HASH;
