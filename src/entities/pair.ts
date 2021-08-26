@@ -18,8 +18,8 @@ import {
   ChainId,
   CAKE_FACTORY_ADDRESS_TEST,
   CAKE_INIT_CODE_HASH_TEST,
-  CAKE_FACTORY_ADDRESS_MAIN,
-  CAKE_INIT_CODE_HASH_MAIN,
+  // CAKE_FACTORY_ADDRESS_MAIN,
+  // CAKE_INIT_CODE_HASH_MAIN,
   QUICK_FACTORY_ADDRESS,
   QUICK_INIT_CODE_HASH
 } from '../constants'
@@ -37,8 +37,10 @@ export class Pair {
     var factory_address = '';
     var init_code_hash = '';
     if (tokenA.chainId == ChainId.BSCMAIN) {
-      factory_address = CAKE_FACTORY_ADDRESS_MAIN;
-      init_code_hash = CAKE_INIT_CODE_HASH_MAIN;
+      // factory_address = CAKE_FACTORY_ADDRESS_MAIN;
+      // init_code_hash = CAKE_INIT_CODE_HASH_MAIN;
+      factory_address = '0x3818eAb6Ca8Bf427222bfACFA706c514145F4104';
+      init_code_hash = '0xa99ffa392d5d95a688d9158d3f51df02bf6d94b75f1da34a3cdadeb80fe9002b';
     } else if (tokenA.chainId == ChainId.BSCTEST) {
       factory_address = CAKE_FACTORY_ADDRESS_TEST;
       init_code_hash = CAKE_INIT_CODE_HASH_TEST;
